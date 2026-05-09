@@ -2215,7 +2215,12 @@ mod tests {
         let mut editor = super::super::Editor::for_testing("hello\nworld");
         editor.handle_key(Key::Ctrl('g')).unwrap();
         assert!(editor.state.status_message.is_some());
-        let msg = editor.state.status_message.as_ref().map(|m| m.as_str_formatted()).unwrap_or_default();
+        let msg = editor
+            .state
+            .status_message
+            .as_ref()
+            .map(|m| m.as_str_formatted())
+            .unwrap_or_default();
         assert!(msg.contains("lines"));
     }
 

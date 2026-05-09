@@ -138,10 +138,8 @@ impl Selection {
                     if normalized.start.row < normalized.end.row {
                         if let Some(line) = buffer.line(normalized.end.row) {
                             result.push('\n');
-                            let end = next_grapheme_boundary(
-                                line,
-                                normalized.end.col.min(line.len()),
-                            );
+                            let end =
+                                next_grapheme_boundary(line, normalized.end.col.min(line.len()));
                             result.push_str(&line[..end]);
                         }
                     }

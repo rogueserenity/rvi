@@ -137,10 +137,10 @@ fn test_unnamed_register_explicit_prefix() {
     let (_dir, path) = temp_file_with_content("hello\nworld\n");
     let mut s = common::RviSession::with_file(&path);
     s.wait_for_text("hello").unwrap();
-    s.send_keys("yy");          // yank "hello" into unnamed register
-    s.send_keys("j");           // move to "world"
+    s.send_keys("yy"); // yank "hello" into unnamed register
+    s.send_keys("j"); // move to "world"
     s.wait_for_cursor_row(1).unwrap();
-    s.send_keys("\"\"p");       // explicit unnamed register paste
+    s.send_keys("\"\"p"); // explicit unnamed register paste
     s.wait_for_text("hello")
         .expect("\"\"p should paste from the unnamed register");
 }
@@ -151,10 +151,10 @@ fn test_unnamed_register_explicit_yank() {
     let (_dir, path) = temp_file_with_content("first\nsecond\n");
     let mut s = common::RviSession::with_file(&path);
     s.wait_for_text("first").unwrap();
-    s.send_keys("\"\"yy");      // yank "first" via explicit unnamed register
+    s.send_keys("\"\"yy"); // yank "first" via explicit unnamed register
     s.send_keys("j");
     s.wait_for_cursor_row(1).unwrap();
-    s.send_keys("p");           // paste with bare p
+    s.send_keys("p"); // paste with bare p
     s.wait_for_text("first")
         .expect("\"\"yy should yank into the unnamed register");
 }

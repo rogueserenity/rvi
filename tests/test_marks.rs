@@ -177,12 +177,12 @@ fn test_visual_marks_as_ex_range() {
     let (_dir, path) = temp_file_with_content("alpha\nbeta\ngamma\ndelta\n");
     let mut s = common::RviSession::with_file(&path);
     s.wait_for_text("alpha").unwrap();
-    s.send_keys("j");               // row 1 ("beta")
+    s.send_keys("j"); // row 1 ("beta")
     s.wait_for_cursor_row(1).unwrap();
-    s.send_keys("V");               // visual line
+    s.send_keys("V"); // visual line
     s.wait_for_status("VISUAL LINE").unwrap();
-    s.send_keys("j");               // extend to row 2 ("gamma")
-    s.send_keys("\x1b");            // exit visual — sets '< to row 1, '> to row 2
+    s.send_keys("j"); // extend to row 2 ("gamma")
+    s.send_keys("\x1b"); // exit visual — sets '< to row 1, '> to row 2
     s.wait_for_status("NORMAL").unwrap();
     s.send_keys(":'<,'>d\r");
     s.wait_for_no_text("beta")

@@ -893,7 +893,11 @@ impl Editor {
 
         self.state.status_message = Some(StatusMessage::WithPath {
             path: path.display().to_string(),
-            suffix: format!(" {} lines, {} bytes preserved", self.document.buffer.len(), bytes),
+            suffix: format!(
+                " {} lines, {} bytes preserved",
+                self.document.buffer.len(),
+                bytes
+            ),
         });
 
         Ok(())

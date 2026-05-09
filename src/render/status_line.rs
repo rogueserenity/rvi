@@ -218,7 +218,7 @@ pub fn render_status_with_path<W: Write>(
         // No room for a path at all — show as much of the suffix as fits.
         truncate_string(suffix, viewport.width())
     } else {
-        format!("\"{}\"{}",  truncate_path(path, available_for_path), suffix)
+        format!("\"{}\"{}", truncate_path(path, available_for_path), suffix)
     };
 
     output.write(&display)?;

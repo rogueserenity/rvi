@@ -206,10 +206,11 @@ pub(super) fn parse_line_addr(input: &str, pos: usize) -> Option<(LineAddr, usiz
             (LineAddr::Number(num), e)
         }
         // `'a` — mark address (lowercase a-z, or `<`/`>` for visual marks)
-        b'\'' if pos + 1 < bytes.len()
-            && (bytes[pos + 1].is_ascii_lowercase()
-                || bytes[pos + 1] == b'<'
-                || bytes[pos + 1] == b'>') =>
+        b'\''
+            if pos + 1 < bytes.len()
+                && (bytes[pos + 1].is_ascii_lowercase()
+                    || bytes[pos + 1] == b'<'
+                    || bytes[pos + 1] == b'>') =>
         {
             let c = bytes[pos + 1] as char;
             (LineAddr::Mark(c), pos + 2)

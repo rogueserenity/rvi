@@ -251,14 +251,11 @@ mod tests {
         assert_eq!(content, "atomic test\n");
 
         // Verify no temp file for this specific write was left behind
-        let leftover = fs::read_dir(&dir)
-            .unwrap()
-            .filter_map(|e| e.ok())
-            .any(|e| {
-                let name = e.file_name();
-                let s = name.to_string_lossy();
-                s.starts_with(".atomic_write.txt.") && s.ends_with(".tmp")
-            });
+        let leftover = fs::read_dir(&dir).unwrap().filter_map(|e| e.ok()).any(|e| {
+            let name = e.file_name();
+            let s = name.to_string_lossy();
+            s.starts_with(".atomic_write.txt.") && s.ends_with(".tmp")
+        });
         assert!(!leftover, "atomic write left behind a .tmp file");
         cleanup(&path);
     }

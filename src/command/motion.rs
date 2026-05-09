@@ -665,10 +665,8 @@ fn execute_word_end(ctx: &CommandContext, count: usize, big_word: bool) -> Optio
                         .map(|(off, _)| off)
                         .unwrap_or(new_line.len());
                     if start < new_line.len() {
-                        let word_class = classify_char(
-                            new_line[start..].chars().next().unwrap(),
-                            big_word,
-                        );
+                        let word_class =
+                            classify_char(new_line[start..].chars().next().unwrap(), big_word);
                         // Advance to end of this word
                         let end = new_line[start..]
                             .char_indices()
