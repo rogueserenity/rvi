@@ -4,7 +4,7 @@
     "config:recommended",
     "helpers:pinGitHubActionDigestsToSemver"
   ],
-  "automerge": false,
+  "automerge": true,
   "cargo": {
     "enabled": true
   }
