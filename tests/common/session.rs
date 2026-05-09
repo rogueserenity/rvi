@@ -332,9 +332,8 @@ impl Drop for RviSession {
         let _ = self.writer.flush();
         let deadline = Instant::now() + Duration::from_secs(1);
         loop {
-            match self.child.try_wait() {
-                Ok(Some(_)) => break,
-                _ => {}
+            if let Ok(Some(_)) = self.child.try_wait() {
+                break;
             }
             if Instant::now() >= deadline {
                 let _ = self.child.kill();

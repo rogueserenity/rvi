@@ -17,8 +17,8 @@ fn test_backward_pattern_address_delete() {
     s.wait_for_cursor_row(3).unwrap();
     s.send_keys(":?foo?d\r");
     // The second "foo" (row 2) should be deleted.
-    s.wait_for_no_text("foo").unwrap_or_else(|_| {}); // first "foo" may still be present
-                                                      // Verify "baz" and "bar" survive.
+    s.wait_for_no_text("foo").unwrap_or(()); // first "foo" may still be present
+                                             // Verify "baz" and "bar" survive.
     s.assert_contains("baz");
     s.assert_contains("bar");
 }

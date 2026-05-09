@@ -1413,8 +1413,10 @@ mod tests {
 
     #[test]
     fn test_list_disable() {
-        let mut s = Settings::default();
-        s.list = true;
+        let mut s = Settings {
+            list: true,
+            ..Default::default()
+        };
         s.apply(&SetCommand::Disable("list".to_string())).unwrap();
         assert!(!s.list);
     }
@@ -1423,8 +1425,10 @@ mod tests {
     fn test_list_query() {
         let s = Settings::default();
         assert_eq!(s.query("list").unwrap(), "nolist");
-        let mut s2 = Settings::default();
-        s2.list = true;
+        let s2 = Settings {
+            list: true,
+            ..Default::default()
+        };
         assert_eq!(s2.query("list").unwrap(), "list");
     }
 

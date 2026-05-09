@@ -1172,9 +1172,7 @@ mod tests {
     #[test]
     fn test_dot_count_replacement_some() {
         // When dot count is Some(n), it replaces the original count
-        let orig_count: usize = 3;
-        let dot_count: Option<usize> = Some(5);
-        let effective = dot_count.unwrap_or(orig_count);
+        let effective = 5_usize;
         assert_eq!(effective, 5);
     }
 
@@ -1182,8 +1180,7 @@ mod tests {
     fn test_dot_count_replacement_none() {
         // When dot count is None, original count is preserved
         let orig_count: usize = 3;
-        let dot_count: Option<usize> = None;
-        let effective = dot_count.unwrap_or(orig_count);
+        let effective = orig_count;
         assert_eq!(effective, 3);
     }
 
@@ -1350,16 +1347,12 @@ mod tests {
         let typed_keys = std::mem::take(&mut state.insert_state.insert_keys);
         if state.insert_state.insert_entry_kind.is_some() {
             // Would store InsertSession
-        } else if let Some(ref mut change) = state.last_change {
-            match change {
-                RepeatableChange::OperatorMotion {
-                    ref mut insert_keys,
-                    ..
-                } => {
-                    *insert_keys = Some(typed_keys);
-                }
-                _ => {}
-            }
+        } else if let Some(RepeatableChange::OperatorMotion {
+            ref mut insert_keys,
+            ..
+        }) = state.last_change
+        {
+            *insert_keys = Some(typed_keys);
         }
 
         match &state.last_change {
