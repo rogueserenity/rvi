@@ -18,5 +18,5 @@ signal-hook = "0.4"
 [dev-dependencies]
 criterion = "0.8"
 portable-pty = "0.9"
-vt100 = "0.15"
+vt100 = "0.16"
 tempfile = "3"
