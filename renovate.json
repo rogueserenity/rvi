@@ -1,10 +1,10 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:base",
+    "config:recommended",
     "helpers:pinGitHubActionDigestsToSemver"
   ],
-  "automerge": false,
+  "automerge": true,
   "cargo": {
     "enabled": true
   }
