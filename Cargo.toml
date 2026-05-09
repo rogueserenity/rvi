@@ -6,7 +6,7 @@ description = "A memory-safe vi clone written in Rust"
 license = "GPL-3.0"
 
 [dependencies]
-termion = "2.0"
+termion = "4.0"
 fancy-regex = "0.18"
 unicode-width = "0.1"
 unicode-segmentation = "1.11"
