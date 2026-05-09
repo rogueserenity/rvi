@@ -8,7 +8,7 @@ license = "GPL-3.0"
 [dependencies]
 termion = "4.0"
 fancy-regex = "0.18"
-unicode-width = "0.1"
+unicode-width = "0.2"
 unicode-segmentation = "1.11"
 thiserror = "2.0"
 arboard = "3"
