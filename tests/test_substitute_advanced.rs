@@ -163,10 +163,13 @@ fn test_search_magic_restored() {
     s.wait_for_status("NORMAL").unwrap();
     s.send_keys(":set magic\r");
     s.wait_for_status("NORMAL").unwrap();
-    // With magic on, /a.b should match "aXb" at row 0 (. = any char).
+    // Confirm cursor is at row 0 before searching, so the result is deterministic.
+    // With magic on, /a.b matches both rows; starting from (0,0) the forward
+    // search skips col 0 and finds "a.b" at row 1 first.
+    s.wait_for_cursor_row(0).unwrap();
     s.send_keys("/a.b\r");
-    s.wait_for_cursor_row(0)
-        .expect("magic: /a.b should match 'aXb' at row 0 (. = any char)");
+    s.wait_for_cursor_row(1)
+        .expect("magic: /a.b should match 'a.b' at row 1 (. = any char matching X)");
 }
 
 // --- :~ command (repeat last replacement with most recent search pattern) ---
