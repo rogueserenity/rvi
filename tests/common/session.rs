@@ -353,7 +353,7 @@ fn screen_row_str(screen: &vt100::Screen, row: usize, cols: usize) -> String {
             if ch.is_empty() {
                 s.push(' ');
             } else {
-                s.push_str(&ch);
+                s.push_str(ch);
             }
         }
     }
