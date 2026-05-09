@@ -320,16 +320,17 @@ impl Editor {
                 motion,
                 count,
                 register,
-            } => {
+            } if op2 == operator => {
                 // This handles the case of dd, yy, cc where the second d/y/c
                 // is parsed while already in operator-pending mode
-                if op2 == operator {
-                    // Multiply operator count by motion count
-                    let total_count = operator_count * count;
-                    // Use the most recently specified register (from second operator if set)
-                    let reg = register.or(operator_register);
-                    self.execute_operator_with_motion(operator, motion, total_count, reg, true)?;
-                }
+                // Multiply operator count by motion count
+                let total_count = operator_count * count;
+                // Use the most recently specified register (from second operator if set)
+                let reg = register.or(operator_register);
+                self.execute_operator_with_motion(operator, motion, total_count, reg, true)?;
+            }
+            ParsedCommand::OperatorMotion { .. } => {
+                // Invalid operator combination
             }
             ParsedCommand::OperatorTextObject {
                 operator: _,

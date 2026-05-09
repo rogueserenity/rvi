@@ -63,7 +63,7 @@ impl Editor {
         {
             let row = dest.row.min(self.document.buffer.len().saturating_sub(1));
             let col = if let Some(line) = self.document.buffer.line(row) {
-                dest.col.min(line.len().saturating_sub(1).max(0))
+                dest.col.min(line.len().saturating_sub(1))
             } else {
                 0
             };
@@ -89,7 +89,7 @@ impl Editor {
             if let Some(origin) = self.state.navigation.jump_origin.take() {
                 let row = origin.row.min(self.document.buffer.len().saturating_sub(1));
                 let col = if let Some(line) = self.document.buffer.line(row) {
-                    origin.col.min(line.len().saturating_sub(1).max(0))
+                    origin.col.min(line.len().saturating_sub(1))
                 } else {
                     0
                 };
@@ -103,7 +103,7 @@ impl Editor {
         if let Some(&dest) = self.state.navigation.jump_list.iter().rev().nth(idx - 1) {
             let row = dest.row.min(self.document.buffer.len().saturating_sub(1));
             let col = if let Some(line) = self.document.buffer.line(row) {
-                dest.col.min(line.len().saturating_sub(1).max(0))
+                dest.col.min(line.len().saturating_sub(1))
             } else {
                 0
             };
@@ -299,7 +299,7 @@ impl Editor {
                 } else {
                     // Jump to exact position, clamping col to line length
                     let col = if let Some(line) = self.document.buffer.line(row) {
-                        dest.col.min(line.len().saturating_sub(1).max(0))
+                        dest.col.min(line.len().saturating_sub(1))
                     } else {
                         0
                     };

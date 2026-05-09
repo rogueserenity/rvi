@@ -86,7 +86,7 @@ impl Editor {
             line.len()
         } else {
             // In normal mode and similar, cursor stays on last character
-            prev_grapheme_boundary(line, line.len()).max(0)
+            prev_grapheme_boundary(line, line.len())
         }
     }
 

@@ -35,11 +35,9 @@ pub fn insert_text(
         buffer.split_line(&split_cursor)?;
 
         // Insert middle lines (if any)
-        let mut current_row = split_cursor.row + 1;
-        for &line in &lines[1..lines.len() - 1] {
+        for (current_row, &line) in (split_cursor.row + 1..).zip(lines[1..lines.len() - 1].iter()) {
             buffer.insert_string(&Cursor::new(current_row, 0), line)?;
             buffer.split_line(&Cursor::new(current_row, line.len()))?;
-            current_row += 1;
         }
 
         // Insert last line at the final row
