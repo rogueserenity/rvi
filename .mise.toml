@@ -1,2 +1,2 @@
 [tools]
-rust = "latest"
+rust = {version = "1.95.0", profile = "default"}
