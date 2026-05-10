@@ -405,19 +405,7 @@ impl Editor {
                 self.delete_lines_with_register(count, register)?;
             }
             VisualKind::Block => {
-                // After normalize(), sel.start.col <= sel.end.col.
-                // Collect block text for register
-                let mut block_text = String::new();
-                for row in sel.start.row..=sel.end.row {
-                    if let Some(line) = self.document.buffer.line(row) {
-                        let s = sel.start.col.min(line.len());
-                        let e = next_grapheme_boundary(line, sel.end.col.min(line.len()));
-                        if s < e {
-                            block_text.push_str(&line[s..e]);
-                        }
-                        block_text.push('\n');
-                    }
-                }
+                let block_text = sel.text(&self.document.buffer);
                 let content = RegisterContent::new(block_text, ContentType::Block);
                 let reg_id = register.and_then(RegisterId::parse);
                 self.state.registers.delete(reg_id, register, content);
@@ -482,18 +470,7 @@ impl Editor {
                 return Ok(());
             }
             VisualKind::Block => {
-                // After normalize(), sel.start.col <= sel.end.col.
-                let mut block_text = String::new();
-                for row in sel.start.row..=sel.end.row {
-                    if let Some(line) = self.document.buffer.line(row) {
-                        let s = sel.start.col.min(line.len());
-                        let e = next_grapheme_boundary(line, sel.end.col.min(line.len()));
-                        if s < e {
-                            block_text.push_str(&line[s..e]);
-                        }
-                        block_text.push('\n');
-                    }
-                }
+                let block_text = sel.text(&self.document.buffer);
                 let content = RegisterContent::new(block_text, ContentType::Block);
                 let reg_id = register.and_then(RegisterId::parse);
                 self.state.registers.yank(reg_id, content);

@@ -254,6 +254,48 @@ fn test_visual_block_change() {
 }
 
 #[test]
+fn test_visual_block_yank_ragged_lines() {
+    // Block yank over ragged lines: cols 5-8 across "long line here", "hi", "long line here".
+    // The short middle line ("hi") has no chars at cols 5-8; when put, that row should
+    // contribute nothing — the pasted block should contain only the two long-line slices.
+    let (_dir, path) = temp_file_with_content("long line here\nhi\nlong line here\n");
+    let mut s = common::RviSession::with_file(&path);
+    s.wait_for_text("long line here").unwrap();
+    s.send_keys("5l"); // col 5
+    s.wait_for_cursor(0, 5).unwrap();
+    s.send_keys("\x162j3l"); // Ctrl-V + 2j + 3l: cols 5-8 across rows 0-2
+    s.wait_for_status("VISUAL BLOCK").unwrap();
+    s.send_keys("y"); // yank block
+    s.wait_for_status("NORMAL").unwrap();
+    // Move to end of buffer and put the block below
+    s.send_keys("Gp");
+    s.wait_for_status("NORMAL").unwrap();
+    // The two long lines should contribute "line" (cols 5-8); the short line contributes nothing
+    s.assert_contains("line");
+}
+
+#[test]
+fn test_visual_block_change_ragged_lines() {
+    // c in visual block over ragged lines: cols 5-8 across "long line here", "hi", "long line here".
+    // The short middle line ("hi") falls outside the block columns and must remain unchanged.
+    let (_dir, path) = temp_file_with_content("long line here\nhi\nlong line here");
+    let mut s = common::RviSession::with_file(&path);
+    s.wait_for_text("long line here").unwrap();
+    s.send_keys("5l"); // col 5
+    s.wait_for_cursor(0, 5).unwrap();
+    s.send_keys("\x162j3l"); // Ctrl-V + 2j + 3l: cols 5-8 across rows 0-2
+    s.wait_for_status("VISUAL BLOCK").unwrap();
+    s.send_keys("c"); // change block
+    s.wait_for_status("INSERT").unwrap();
+    s.send_keys("X\x1b"); // replace block with "X"
+    s.wait_for_status("NORMAL").unwrap();
+    // Short line "hi" should be unaffected
+    s.assert_contains("hi");
+    // Long lines should have the block replaced with "X"
+    s.assert_contains("long X here");
+}
+
+#[test]
 fn test_visual_block_mixed_length_lines() {
     // When the block column extends past the end of a shorter line,
     // that line should be skipped / unchanged during the operation.

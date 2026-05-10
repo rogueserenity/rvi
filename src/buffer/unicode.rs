@@ -387,4 +387,256 @@ mod tests {
         assert_eq!(classify_char('.', true), CharClass::Word);
         assert_eq!(classify_char(' ', true), CharClass::Whitespace);
     }
+
+    // =========================================================================
+    // Coverage gap fills
+    // =========================================================================
+
+    #[test]
+    fn test_grapheme_at_empty_string() {
+        assert_eq!(grapheme_at("", 0), None);
+    }
+
+    #[test]
+    fn test_grapheme_at_at_end() {
+        // Offset exactly at end of string returns None (no grapheme there)
+        let s = "hi";
+        assert_eq!(grapheme_at(s, 2), None);
+    }
+
+    #[test]
+    fn test_grapheme_at_multibyte() {
+        // CJK chars are 3 bytes each
+        let s = "你好";
+        assert_eq!(grapheme_at(s, 0), Some("你"));
+        assert_eq!(grapheme_at(s, 3), Some("好"));
+        assert_eq!(grapheme_at(s, 6), None);
+    }
+
+    #[test]
+    fn test_grapheme_at_combining() {
+        // Combining char attaches to base — single grapheme
+        let s = "a\u{0301}b";
+        assert_eq!(grapheme_at(s, 0), Some("a\u{0301}"));
+        assert_eq!(grapheme_at(s, 3), Some("b"));
+    }
+
+    #[test]
+    fn test_next_grapheme_boundary_multibyte() {
+        // CJK: each grapheme is 3 bytes
+        let s = "你好世界";
+        assert_eq!(next_grapheme_boundary(s, 0), 3);
+        assert_eq!(next_grapheme_boundary(s, 3), 6);
+        assert_eq!(next_grapheme_boundary(s, 9), 12);
+    }
+
+    #[test]
+    fn test_next_grapheme_boundary_combining() {
+        // a + combining acute: one grapheme spanning 3 bytes
+        let s = "a\u{0301}b";
+        assert_eq!(next_grapheme_boundary(s, 0), 3);
+        assert_eq!(next_grapheme_boundary(s, 3), 4);
+    }
+
+    #[test]
+    fn test_next_grapheme_boundary_past_end() {
+        // Offset beyond length returns string length
+        let s = "hi";
+        assert_eq!(next_grapheme_boundary(s, 100), s.len());
+    }
+
+    #[test]
+    fn test_next_grapheme_boundary_empty_string() {
+        assert_eq!(next_grapheme_boundary("", 0), 0);
+    }
+
+    #[test]
+    fn test_prev_grapheme_boundary_empty_string() {
+        assert_eq!(prev_grapheme_boundary("", 0), 0);
+        assert_eq!(prev_grapheme_boundary("", 5), 0);
+    }
+
+    #[test]
+    fn test_display_width_up_to_offset_past_end() {
+        // When offset > s.len(), returns full display width
+        let s = "hello";
+        assert_eq!(display_width_up_to(s, 100, DEFAULT_TAB_WIDTH), 5);
+    }
+
+    #[test]
+    fn test_display_width_up_to_zero_offset() {
+        let s = "hello";
+        assert_eq!(display_width_up_to(s, 0, DEFAULT_TAB_WIDTH), 0);
+    }
+
+    #[test]
+    fn test_display_width_empty_string() {
+        assert_eq!(display_width("", DEFAULT_TAB_WIDTH), 0);
+        assert_eq!(display_width("", 4), 0);
+    }
+
+    #[test]
+    fn test_display_width_control_chars_zero_width() {
+        // Control characters (other than tab) are typically zero-width via .width().unwrap_or(0)
+        // Null char has no width, so it's treated as 0
+        assert_eq!(display_width("\0", DEFAULT_TAB_WIDTH), 0);
+    }
+
+    #[test]
+    fn test_validate_byte_offset_empty_string() {
+        assert!(validate_byte_offset("", 0));
+        assert!(!validate_byte_offset("", 1));
+    }
+
+    #[test]
+    fn test_validate_byte_offset_cjk() {
+        let s = "你好";
+        assert!(validate_byte_offset(s, 0));
+        assert!(!validate_byte_offset(s, 1)); // mid-char
+        assert!(!validate_byte_offset(s, 2)); // mid-char
+        assert!(validate_byte_offset(s, 3)); // boundary
+        assert!(!validate_byte_offset(s, 4));
+        assert!(validate_byte_offset(s, 6)); // end
+    }
+
+    #[test]
+    fn test_grapheme_byte_offset_basic() {
+        let s = "hello";
+        assert_eq!(grapheme_byte_offset(s, 0), Some(0));
+        assert_eq!(grapheme_byte_offset(s, 1), Some(1));
+        assert_eq!(grapheme_byte_offset(s, 4), Some(4));
+        assert_eq!(grapheme_byte_offset(s, 5), None);
+    }
+
+    #[test]
+    fn test_grapheme_byte_offset_multibyte() {
+        // CJK: each grapheme starts at 3-byte multiples
+        let s = "你好世界";
+        assert_eq!(grapheme_byte_offset(s, 0), Some(0));
+        assert_eq!(grapheme_byte_offset(s, 1), Some(3));
+        assert_eq!(grapheme_byte_offset(s, 2), Some(6));
+        assert_eq!(grapheme_byte_offset(s, 3), Some(9));
+        assert_eq!(grapheme_byte_offset(s, 4), None);
+    }
+
+    #[test]
+    fn test_grapheme_byte_offset_combining() {
+        // "a\u{0301}b" => 2 graphemes
+        let s = "a\u{0301}b";
+        assert_eq!(grapheme_byte_offset(s, 0), Some(0));
+        assert_eq!(grapheme_byte_offset(s, 1), Some(3)); // "b" starts at byte 3
+        assert_eq!(grapheme_byte_offset(s, 2), None);
+    }
+
+    #[test]
+    fn test_grapheme_byte_offset_empty_string() {
+        assert_eq!(grapheme_byte_offset("", 0), None);
+    }
+
+    #[test]
+    fn test_grapheme_count_empty_string() {
+        assert_eq!(grapheme_count(""), 0);
+    }
+
+    #[test]
+    fn test_grapheme_count_emoji() {
+        // Many emoji are single graphemes despite being multi-byte / multi-codepoint.
+        // Use a simple BMP emoji to keep the test robust across unicode tables.
+        assert_eq!(grapheme_count("☺"), 1);
+    }
+
+    #[test]
+    fn test_next_char_boundary_basic() {
+        let s = "hello";
+        assert_eq!(next_char_boundary(s, 0), 1);
+        assert_eq!(next_char_boundary(s, 2), 3);
+        assert_eq!(next_char_boundary(s, 4), 5);
+    }
+
+    #[test]
+    fn test_next_char_boundary_multibyte() {
+        // CJK chars are 3 bytes
+        let s = "你好";
+        // Starting at byte 0, next char boundary is 3
+        assert_eq!(next_char_boundary(s, 0), 3);
+        // Starting mid-character at byte 1, advances to 3
+        assert_eq!(next_char_boundary(s, 1), 3);
+        // Starting at byte 3 advances to 6
+        assert_eq!(next_char_boundary(s, 3), 6);
+    }
+
+    #[test]
+    fn test_next_char_boundary_at_end() {
+        let s = "hi";
+        // At/past the end returns s.len()
+        assert_eq!(next_char_boundary(s, 2), 2);
+        assert_eq!(next_char_boundary(s, 100), 2);
+    }
+
+    #[test]
+    fn test_next_char_boundary_empty_string() {
+        assert_eq!(next_char_boundary("", 0), 0);
+        assert_eq!(next_char_boundary("", 5), 0);
+    }
+
+    #[test]
+    fn test_next_char_boundary_last_char() {
+        // Multi-byte char at end: from byte 0, advances past entire char to len
+        let s = "你";
+        assert_eq!(next_char_boundary(s, 0), 3);
+        assert_eq!(next_char_boundary(s, 1), 3);
+        assert_eq!(next_char_boundary(s, 2), 3);
+    }
+
+    #[test]
+    fn test_classify_char_digits_word() {
+        assert_eq!(classify_char('0', false), CharClass::Word);
+        assert_eq!(classify_char('9', false), CharClass::Word);
+    }
+
+    #[test]
+    fn test_classify_char_unicode_letter() {
+        // Unicode letter is a word char per is_alphanumeric()
+        assert_eq!(classify_char('é', false), CharClass::Word);
+        assert_eq!(classify_char('你', false), CharClass::Word);
+    }
+
+    #[test]
+    fn test_classify_char_tab_is_whitespace() {
+        assert_eq!(classify_char('\t', false), CharClass::Whitespace);
+        assert_eq!(classify_char('\t', true), CharClass::Whitespace);
+        assert_eq!(classify_char('\n', false), CharClass::Whitespace);
+    }
+
+    #[test]
+    fn test_classify_char_big_word_punctuation() {
+        // In big-word mode, punctuation classifies as Word
+        assert_eq!(classify_char('(', true), CharClass::Word);
+        assert_eq!(classify_char('@', true), CharClass::Word);
+        assert_eq!(classify_char('/', true), CharClass::Word);
+    }
+
+    #[test]
+    fn test_is_word_char_unicode() {
+        // Unicode alphanumerics qualify as word chars
+        assert!(is_word_char('é'));
+        assert!(is_word_char('Ω'));
+        assert!(is_word_char('你'));
+    }
+
+    #[test]
+    fn test_charclass_equality_and_clone() {
+        // Trait coverage for derived impls
+        let c1 = CharClass::Word;
+        let c2 = c1;
+        assert_eq!(c1, c2);
+        assert_ne!(CharClass::Word, CharClass::Punctuation);
+        let _debug = format!("{:?}", CharClass::Whitespace);
+    }
+
+    #[test]
+    fn test_default_tab_width_constant() {
+        // Sanity: ensure the constant is the documented value
+        assert_eq!(DEFAULT_TAB_WIDTH, 8);
+    }
 }
