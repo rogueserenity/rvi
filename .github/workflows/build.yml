@@ -30,10 +30,14 @@ jobs:
           key: ${{ matrix.target }}
       - name: Build
         run: cargo build --release --target ${{ matrix.target }}
+      - name: Package
+        run: |
+          cp target/${{ matrix.target }}/release/rvi rvi
+          tar -czf rvi-${{ matrix.target }}.tar.gz rvi
       - name: Upload binary
         uses: svenstaro/upload-release-action@29e53e917877a24fad85510ded594ab3c9ca12de # 2.11.5
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: target/${{ matrix.target }}/release/rvi
-          asset_name: rvi-${{ matrix.target }}
+          file: rvi-${{ matrix.target }}.tar.gz
+          asset_name: rvi-${{ matrix.target }}.tar.gz
           tag: ${{ github.ref }}
