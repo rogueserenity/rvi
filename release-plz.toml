@@ -1,2 +1,8 @@
 [workspace]
 changelog_update = false
+publish = false
+git_release_enable = true
+
+[[package]]
+name = "rvi"
+git_only = true
