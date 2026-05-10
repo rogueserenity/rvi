@@ -1,0 +1,29 @@
+name: Release
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+      - uses: tibdex/github-app-token@3beb63f4bd073e61482598c45c71c1019b59b73a # v2.1.0
+        id: app-token
+        with:
+          app_id: ${{ secrets.RELEASE_PLZ_APP_ID }}
+          private_key: ${{ secrets.RELEASE_PLZ_APP_PRIVATE_KEY }}
+      - uses: dtolnay/rust-toolchain@29eef336d9b2848a0b548edc03f92a220660cdb8 # stable
+      - uses: release-plz/release-plz@264355d5c51ceed3fb104529df4426432e765993 # release-plz-v0.3.157
+        with:
+          command: release-pr
+          github_token: ${{ steps.app-token.outputs.token }}
