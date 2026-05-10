@@ -168,13 +168,13 @@ impl Selection {
                     normalized.start.row..=normalized.end.row.min(buffer.len().saturating_sub(1))
                 {
                     if let Some(line) = buffer.line(i) {
-                        if !result.is_empty() {
-                            result.push('\n');
-                        }
                         let s = normalized.start.col.min(line.len());
                         // Advance past the last grapheme for inclusive end.
                         let e = next_grapheme_boundary(line, normalized.end.col.min(line.len()));
-                        result.push_str(&line[s..e]);
+                        if s < e {
+                            result.push_str(&line[s..e]);
+                        }
+                        result.push('\n');
                     }
                 }
                 result
@@ -306,7 +306,7 @@ mod tests {
         // Row 0: "hello"[1..4] = "ell"
         // Row 1: "world"[1..4] = "orl"
         // Row 2: "test"[1..4]  = "est"
-        assert_eq!(selection.text(&buffer), "ell\norl\nest");
+        assert_eq!(selection.text(&buffer), "ell\norl\nest\n");
     }
 
     #[test]
@@ -317,6 +317,6 @@ mod tests {
         // Row 0: "hi",   next_grapheme_boundary("hi", min(4,2)=2) = 2 -> [1..2] = "i"
         // Row 1: "world", next_grapheme_boundary("world", 4) = 5       -> [1..5] = "orld"
         // Row 2: "ok",   next_grapheme_boundary("ok", min(4,2)=2) = 2  -> [1..2] = "k"
-        assert_eq!(selection.text(&buffer), "i\norld\nk");
+        assert_eq!(selection.text(&buffer), "i\norld\nk\n");
     }
 }
