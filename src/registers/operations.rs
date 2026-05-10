@@ -629,6 +629,46 @@ mod tests {
         assert!(storage.has(None));
     }
 
+    // Direct writes to numbered registers 1-9 are silently discarded
+
+    #[test]
+    fn test_direct_write_to_numbered_register_1_through_9_is_noop() {
+        let mut storage = RegisterStorage::new();
+
+        // Writing directly to "1-"9 should be silently ignored.
+        for n in '1'..='9' {
+            storage.store(RegisterId::parse(n), Some(n), char_content("x"), false);
+        }
+
+        // None of the numbered registers should have content.
+        for n in '1'..='9' {
+            assert!(
+                storage.get(RegisterId::parse(n)).is_none(),
+                "register \"{n} should be empty after direct write"
+            );
+        }
+        // Unnamed and yank register are also untouched.
+        assert!(storage.get(None).is_none());
+        assert!(storage.get(RegisterId::parse('0')).is_none());
+    }
+
+    #[test]
+    fn test_clear_numbered_1_through_9_is_noop() {
+        let mut storage = RegisterStorage::new();
+
+        // Populate "1 via a real delete.
+        storage.store_delete(None, None, line_content("line\n"));
+        assert!(storage.get(RegisterId::parse('1')).is_some());
+
+        // Calling clear() on "1-"9 should not panic and should not wipe "1.
+        for n in '1'..='9' {
+            storage.clear(RegisterId::parse(n));
+        }
+
+        // "1 is still present — individual numbered registers cannot be cleared.
+        assert!(storage.get(RegisterId::parse('1')).is_some());
+    }
+
     // store_small_delete tests
 
     #[test]
