@@ -14,13 +14,13 @@ rvi aims for faithful POSIX vi compatibility with select vim extensions, enforci
 ```toml
 # .mise.toml
 [tools]
-"ubi:rogueserenity/rvi" = "latest"
+"github:rogueserenity/rvi" = "latest"
 ```
 
 Or install globally:
 
 ```bash
-mise use -g "ubi:rogueserenity/rvi"
+mise use -g "github:rogueserenity/rvi"
 ```
 
 ### Pre-built binaries
