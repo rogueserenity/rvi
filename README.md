@@ -29,8 +29,8 @@ Download the latest binary for your platform from [GitHub Releases](https://gith
 
 | Platform | Architecture | File |
 |----------|--------------|------|
-| macOS | Apple Silicon | `rvi-aarch64-apple-darwin` |
-| Linux | x86_64 | `rvi-x86_64-unknown-linux-gnu` |
+| macOS | Apple Silicon | `rvi-aarch64-apple-darwin.tar.gz` |
+| Linux | x86_64 | `rvi-x86_64-unknown-linux-gnu.tar.gz` |
 
 ### From source
 
@@ -98,9 +98,11 @@ EXINIT='set number|set ignorecase' rvi file.txt
 |------|-------------|
 | `-R` | Read-only mode |
 | `-t {tag}` | Open file at tag |
-| `-r [file]` | Recover from crash |
+| `-r` | List all recoverable files in `/tmp` and exit |
+| `-r {file}` | Recover `{file}` from its crash-recovery temp file |
 | `-c {cmd}` | Execute ex command after load |
-| `+{N}` | Go to line N after load |
+| `+{cmd}` | Execute ex command after load (e.g. `+42` goes to line 42) |
+| `+` | Go to last line after load |
 
 ## License
 
