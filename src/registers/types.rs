@@ -427,6 +427,36 @@ mod tests {
     }
 
     #[test]
+    fn test_register_content_append_both_block() {
+        // Block + Block: neither is linewise, so concatenate as characterwise.
+        let mut content = RegisterContent::new("col1".to_string(), ContentType::Block);
+        let other = RegisterContent::new("\ncol2".to_string(), ContentType::Block);
+        content.append(&other);
+        assert_eq!(content.text(), "col1\ncol2");
+        assert!(content.is_block());
+    }
+
+    #[test]
+    fn test_register_content_append_block_to_linewise() {
+        // Block appended to linewise: linewise wins, newline separator added if needed.
+        let mut content = RegisterContent::linewise("line".to_string());
+        let other = RegisterContent::new("col".to_string(), ContentType::Block);
+        content.append(&other);
+        assert_eq!(content.text(), "line\ncol");
+        assert!(content.is_linewise());
+    }
+
+    #[test]
+    fn test_register_content_append_linewise_to_block() {
+        // Linewise appended to block: linewise wins.
+        let mut content = RegisterContent::new("col".to_string(), ContentType::Block);
+        let other = RegisterContent::linewise("line".to_string());
+        content.append(&other);
+        assert_eq!(content.text(), "col\nline");
+        assert!(content.is_linewise());
+    }
+
+    #[test]
     fn test_register_kind_equality() {
         assert_eq!(RegisterKind::Unnamed, RegisterKind::Unnamed);
         assert_eq!(RegisterKind::Named('a'), RegisterKind::Named('a'));
