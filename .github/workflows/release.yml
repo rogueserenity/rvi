@@ -35,7 +35,7 @@ jobs:
       - name: Install mise
         uses: jdx/mise-action@c2a87611a18de5b3828c5652fe268e992400cb5c # v4.3.0
       - name: Release
-        uses: release-plz/action@2eb1d8bcb770b4c48ccfaad919734b38b51958c9 # v0.5.131
+        uses: release-plz/action@b5543c19b03be9bd48852d20ca89f478b7723260 # v0.5.132
         with:
           command: release
         env:
@@ -67,7 +67,7 @@ jobs:
       - name: Install mise
         uses: jdx/mise-action@c2a87611a18de5b3828c5652fe268e992400cb5c # v4.3.0
       - name: Release PR
-        uses: release-plz/action@2eb1d8bcb770b4c48ccfaad919734b38b51958c9 # v0.5.131
+        uses: release-plz/action@b5543c19b03be9bd48852d20ca89f478b7723260 # v0.5.132
         with:
           command: release-pr
         env:
